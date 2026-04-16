@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vape Cart Troubleshooter</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #FFFFFF;
+  color: #1B3A2F;
+}
+.widget {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 28px 20px 32px;
+}
+.widget-heading {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1B3A2F;
+  text-align: center;
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
+}
+.widget-sub {
+  font-size: 14px;
+  color: #7A8B82;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.issue-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.issue-card {
+  background: #FFFFFF;
+  border: 1.5px solid rgba(27,58,47,0.15);
+  border-radius: 14px;
+  padding: 15px 12px 13px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s, transform 0.12s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.issue-card:hover { border-color: #1B3A2F; background: #F8F6F2; }
+.issue-card:active { transform: scale(0.97); }
+.issue-card.selected { border-color: #1B3A2F; background: #1B3A2F; }
+.issue-card.selected .issue-label { color: #FFFFFF; }
+.issue-card.selected .issue-sub { color: rgba(255,255,255,0.65); }
+.issue-icon { font-size: 22px; line-height: 1; display: block; }
+.issue-label { font-size: 12px; font-weight: 700; color: #1B3A2F; display: block; line-height: 1.3; }
+.issue-sub { font-size: 11px; color: #7A8B82; display: block; line-height: 1.3; }
+.issue-card.wide {
+  grid-column: span 2;
+}
+.result-panel {
+  background: #F8F6F2;
+  border: 1.5px solid rgba(27,58,47,0.12);
+  border-radius: 14px;
+  padding: 20px 20px 18px;
+  transition: opacity 0.22s;
+  opacity: 0;
+  pointer-events: none;
+}
+.result-panel.visible { opacity: 1; pointer-events: auto; }
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-dot.fix { background: #D4A04A; }
+.status-dot.normal { background: #4a9e6b; }
+.result-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1B3A2F;
+  line-height: 1.3;
+}
+.result-copy {
+  font-size: 13px;
+  color: #4A5D53;
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+.divider {
+  border: none;
+  border-top: 1px solid rgba(27,58,47,0.1);
+  margin: 14px 0;
+}
+.steps-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #7A8B82;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 10px;
+  display: block;
+}
+.steps { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.step-row { display: flex; align-items: flex-start; gap: 10px; }
+.step-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #1B3A2F;
+  color: #D4A04A;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.step-text { font-size: 12px; color: #4A5D53; line-height: 1.5; }
+.step-text strong { color: #1B3A2F; font-weight: 700; }
+.result-cta {
+  display: inline-block;
+  background: #D4A04A;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 9px 18px;
+  border-radius: 20px;
+  transition: background 0.15s;
+  letter-spacing: 0.2px;
+}
+.result-cta:hover { background: #b8882e; }
+.reset-btn {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  color: #7A8B82;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 12px;
+  cursor: pointer;
+  padding: 4px;
+  font-family: inherit;
+}
+.reset-btn:hover { color: #1B3A2F; }
+</style>
+</head>
+<body>
+ 
+<div class="widget" id="widget">
+  <h2 class="widget-heading">Vape cart not cooperating?</h2>
+  <p class="widget-sub">Pick your problem and get a quick fix</p>
+ 
+  <div class="issue-grid">
+    <div class="issue-card" data-issue="burnt" role="button" tabindex="0">
+      <span class="issue-icon">🔥</span>
+      <span class="issue-label">Burnt taste</span>
+      <span class="issue-sub">Harsh, acrid hit</span>
+    </div>
+    <div class="issue-card" data-issue="novapor" role="button" tabindex="0">
+      <span class="issue-icon">🚫</span>
+      <span class="issue-label">No vapor</span>
+      <span class="issue-sub">Nothing comes out</span>
+    </div>
+    <div class="issue-card" data-issue="nothing" role="button" tabindex="0">
+      <span class="issue-icon">🤷</span>
+      <span class="issue-label">Feel nothing</span>
+      <span class="issue-sub">No effects at all</span>
+    </div>
+    <div class="issue-card" data-issue="harsh" role="button" tabindex="0">
+      <span class="issue-icon">😬</span>
+      <span class="issue-label">Harsh throat hit</span>
+      <span class="issue-sub">Coughing every time</span>
+    </div>
+    <div class="issue-card wide" data-issue="clogged" role="button" tabindex="0">
+      <span class="issue-icon">🪣</span>
+      <span class="issue-label">Cart seems clogged</span>
+      <span class="issue-sub">Pulling hard with little result</span>
+    </div>
+  </div>
+ 
+  <div class="result-panel" id="result" role="region" aria-live="polite">
+    <div class="result-header">
+      <div class="status-dot" id="status-dot"></div>
+      <p class="result-title" id="result-title"></p>
+    </div>
+    <p class="result-copy" id="result-copy"></p>
+    <hr class="divider">
+    <span class="steps-label">Steps to fix it</span>
+    <div class="steps" id="result-steps"></div>
+    <a class="result-cta" href="https://mood.com/shop/product-category/vapes" target="_blank" rel="noopener">Shop Mood Vapes</a>
+    <button class="reset-btn" id="reset-btn">Pick a different issue</button>
+  </div>
+</div>
+ 
+<script>
+var results = {
+  burnt: {
+    statusType: "fix",
+    title: "Voltage is too high — lower it immediately",
+    copy: "Burnt taste means your coil exceeded around 400°F. High voltage destroys terpenes and creates that harsh, unpleasant hit. This is the most common first-timer mistake.",
+    steps: [
+      { strong: "Drop to 2.6V", text: " — the lowest end of the safe range." },
+      { strong: "Wait 30 seconds", text: " before the next pull to let the oil absorb back into the coil." },
+      { strong: "Use the 3-second rule:", text: " press the button, count three seconds, release." },
+      { strong: "If using a Mood disposable,", text: " the temperature is pre-set — no adjustments needed." }
+    ]
+  },
+  novapor: {
+    statusType: "fix",
+    title: "Battery or connection issue",
+    copy: "No vapor usually means the battery is low or the contact points need a clean. Check these in order before assuming the cart is faulty.",
+    steps: [
+      { strong: "Check the charge first.", text: " Plug in via USB-C and wait a few minutes." },
+      { strong: "Check the connection", text: " between the cart and battery — reseat it firmly." },
+      { strong: "Clean the contact points", text: " with a dry cotton swab to remove any residue." },
+      { strong: "Pull steadily for 3 seconds", text: " — short, choppy pulls often produce nothing." }
+    ]
+  },
+  nothing: {
+    statusType: "normal",
+    title: "This is normal — your calibration is working",
+    copy: "Not feeling immediate effects on your first pull is expected, not a problem. Your endocannabinoid system needs time to recognize and process cannabinoids, especially on first exposure.",
+    steps: [
+      { strong: "Wait the full 15 minutes", text: " after your first pull before drawing any conclusions." },
+      { strong: "If still nothing,", text: " take a second 3-second pull and wait again." },
+      { strong: "Many first-time users", text: " need 2 to 3 sessions before feeling pronounced effects — this is normal." },
+      { strong: "Tomorrow's session", text: " will almost always feel stronger than today's." }
+    ]
+  },
+  harsh: {
+    statusType: "fix",
+    title: "You're pulling too hard or running too hot",
+    copy: "A harsh throat hit usually comes from aggressive pulls or voltage that's slightly too high. Think sipping tea, not chugging water.",
+    steps: [
+      { strong: "Slow your draw right down", text: " — gentle and steady, not hard and fast." },
+      { strong: "Drop voltage to 2.6V", text: " if your device allows adjustment." },
+      { strong: "Shorten pull duration", text: " to 3 seconds until it feels smooth." },
+      { strong: "Stay well hydrated", text: " — dry mouth amplifies harshness significantly." }
+    ]
+  },
+  clogged: {
+    statusType: "fix",
+    title: "Oil has thickened and blocked the airflow",
+    copy: "Cannabis oil is naturally thick and viscous. Cold temperatures or prolonged sitting can cause it to block the airflow channel. This is an easy fix.",
+    steps: [
+      { strong: "Take a long pull without activating the battery", text: " to clear air bubbles from the chamber." },
+      { strong: "Warm the cart between your palms", text: " for 20 to 30 seconds to thin the oil." },
+      { strong: "Always store upright", text: " and never horizontal — sideways storage causes pooling." },
+      { strong: "Keep at room temperature.", text: " Cold environments thicken oil and cause clogs." }
+    ]
+  }
+};
+ 
+var cards = document.querySelectorAll('.issue-card');
+var panel = document.getElementById('result');
+var dotEl = document.getElementById('status-dot');
+var titleEl = document.getElementById('result-title');
+var copyEl = document.getElementById('result-copy');
+var stepsEl = document.getElementById('result-steps');
+var resetBtn = document.getElementById('reset-btn');
+ 
+function selectIssue(issue) {
+  cards.forEach(function(c) { c.classList.toggle('selected', c.dataset.issue === issue); });
+  var r = results[issue];
+  dotEl.className = 'status-dot ' + r.statusType;
+  titleEl.textContent = r.title;
+  copyEl.textContent = r.copy;
+  stepsEl.innerHTML = '';
+  r.steps.forEach(function(s, i) {
+    var row = document.createElement('div');
+    row.className = 'step-row';
+    var num = document.createElement('div');
+    num.className = 'step-num';
+    num.textContent = i + 1;
+    var text = document.createElement('p');
+    text.className = 'step-text';
+    var strong = document.createElement('strong');
+    strong.textContent = s.strong;
+    text.appendChild(strong);
+    text.appendChild(document.createTextNode(s.text));
+    row.appendChild(num);
+    row.appendChild(text);
+    stepsEl.appendChild(row);
+  });
+  panel.classList.add('visible');
+  sendHeight();
+}
+ 
+function reset() {
+  cards.forEach(function(c) { c.classList.remove('selected'); });
+  panel.classList.remove('visible');
+  sendHeight();
+}
+ 
+cards.forEach(function(card) {
+  card.addEventListener('click', function() { selectIssue(this.dataset.issue); });
+  card.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectIssue(this.dataset.issue); }
+  });
+});
+ 
+resetBtn.addEventListener('click', reset);
+ 
+function sendHeight() {
+  setTimeout(function() {
+    var h = document.getElementById('widget').scrollHeight + 16;
+    window.parent.postMessage({ type: 'iframeHeight', height: h }, '*');
+  }, 50);
+}
+ 
+sendHeight();
+window.addEventListener('resize', sendHeight);
+</script>
+</body>
+</html>
+ 
